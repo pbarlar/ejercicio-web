@@ -16,7 +16,7 @@ jobs:
 
       - name: 3.Instalar dependencias
         run: |
-          npm ci
+          npm install
       - name: 4.Configurar credenciales de AWS
         uses: aws-actions/configure-aws-credentials@v5.1.0
         with:
