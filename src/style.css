@@ -1,0 +1,102 @@
+/* --- 1. Base y Configuración General --- */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #fcf8f3;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding-top: 50px;
+    margin: 0;
+}
+
+.container {
+    /* Estilo de la tarjeta principal */
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 450px;
+}
+
+h1 {
+    /* Estilo del título: Naranja principal */
+    text-align: center;
+    color: #fd7e14; 
+    margin-bottom: 25px;
+}
+
+/* --- 2. Formulario de entrada --- */
+#task-form {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+#task-input {
+    /* Campo de texto */
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ffc107;
+    border-radius: 4px 0 0 4px; 
+    font-size: 1em;
+}
+
+#task-form button {
+    /* Botón de añadir: Naranja principal */
+    padding: 10px 15px;
+    background-color: #ffc107; 
+    color: #333; 
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-weight: bold;
+}
+
+#task-form button:hover {
+    background-color: #ffae00; 
+}
+
+/* --- 3. Lista de tareas --- */
+#task-list {
+    /* Resetear estilos de lista */
+    list-style: none;
+    padding: 0;
+}
+
+#task-list li {
+    /* Estilo de cada elemento de la lista */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ffe0b2; 
+    background-color: #fff9f0;
+    margin-bottom: 5px;
+    border-radius: 4px;
+}
+
+.task-text {
+    /* El texto de la tarea */
+    flex-grow: 1;
+    cursor: pointer;
+}
+
+.completed .task-text {
+    /* Estilo para tareas completadas */
+    text-decoration: line-through;
+    color: #a0a0a0; 
+}
+
+.delete-btn {
+    /* Botón de eliminar (Mantiene el rojo por convención, pero lo adaptamos ligeramente) */
+    background: none;
+    border: none;
+    color: #dc3545; 
+    font-size: 1.2em;
+    cursor: pointer;
+    margin-left: 10px;
+    padding: 5px;
+}

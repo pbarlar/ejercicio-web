@@ -1,0 +1,24 @@
+{
+  "name": "ejercicio-web",
+  "version": "1.0.0",
+  "description": "Aplicación To-Do List para ejercicio de Gitflow y CI",
+  "main": "src/app.js",
+  "type": "module",
+  "scripts": {
+    "test": "mocha 'tests/app.test.js'",  
+    "start": "echo 'Run the app by opening src/index.html'",
+    "lint": "echo 'No linting specified'"
+  },
+  "keywords": [
+    "todo",
+    "javascript",
+    "mocha"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.3.10",
+    "mocha": "^10.2.0",
+    "jsdom": "^23.0.1"
+  }
+}
