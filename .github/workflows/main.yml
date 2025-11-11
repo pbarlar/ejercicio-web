@@ -1,0 +1,31 @@
+name: Subir Proyecto Bucket S3
+on:
+  workflow_dispatch:
+
+jobs:
+  despliegue-bucket:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1.Checkout del código
+        uses: actions/checkout@v6-beta
+
+      - name: 2.Configurar Node
+        uses: actions/setup-node@v6.0.0
+        with:
+          node-version: '18'
+
+      - name: 3.Instalar dependencias
+        run: |
+          npm ci
+      - name: 4.Configurar credenciales de AWS
+        uses: aws-actions/configure-aws-credentials@v5.1.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+
+      - name: 5.Subir al bucket
+        run: |
+          echo "Subiendo archivos a S3..."
+          aws s3 sync ./ s3://${{ secrets.S3_BUCKET }}/ --delete 
