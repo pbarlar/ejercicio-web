@@ -4,7 +4,7 @@
   "description": "Aplicación To-Do List para ejercicio de Gitflow y CI",
   "main": "src/app.js",
   "scripts": {
-    "test": "mocha tests/app.test.js",  
+    "test": "mocha 'tests/**/*.js'",  
     "start": "echo 'Run the app by opening src/index.html'",
     "lint": "echo 'No linting specified'"
   },
