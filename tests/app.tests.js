@@ -1,8 +1,8 @@
 // tests/app.test.js
 
-// --- 1. CONFIGURACIÓN DE ENTORNO (JSDOM - Debe ir PRIMERO) ---
-// Importamos JSDOM para simular el navegador en el entorno de Node.js (CI)
-const { JSDOM } = require('jsdom');
+// --- 1. CONFIGURACIÓN DE ENTORNO (JSDOM - USANDO IMPORT) ---
+// Usamos import ya que package.json está configurado con "type": "module"
+import { JSDOM } from 'jsdom';
 
 // Creamos la instancia JSDOM, simulando el DOM y localStorage
 const dom = new JSDOM('<!doctype html><html><body><ul id="task-list"></ul></body></html>');
@@ -13,7 +13,8 @@ global.HTMLElement = dom.window.HTMLElement;
 
 
 // --- 2. CÓDIGO DE PRUEBAS ---
-import { expect } from 'chai';
+import chai from 'chai'; // Importación de ESM para Chai
+const expect = chai.expect; // Extracción del expect
 
 // Importamos las funciones DESPUÉS de configurar el entorno global
 import { addTask, toggleTask, deleteTask } from '../src/app.js'; 
@@ -39,11 +40,11 @@ describe('To-Do List: Lógica CON Persistencia (Mocha/Chai)', () => {
     });
 
     it('toggleTask debe cambiar el estado y actualizar localStorage', () => {
-        // Preparamos el estado inicial (la función addTask se encarga de saveTasks)
+        // Preparamos el estado inicial
         addTask('Tarea a completar');
         
         // Ejecución de la acción
-        toggleTask(0); // Cambiamos el estado del primer (y único) elemento
+        toggleTask(0);
         
         // Verificación del cambio en localStorage
         const stored = JSON.parse(localStorage.getItem('tasks'));
@@ -53,8 +54,8 @@ describe('To-Do List: Lógica CON Persistencia (Mocha/Chai)', () => {
     });
 
     it('deleteTask debe remover la tarea y actualizar localStorage', () => {
-        addTask('Tarea 1');
-        addTask('Tarea 2');
+        addTask('Tarea a eliminar');
+        addTask('Tarea de reserva');
         
         // Ejecución de la acción
         deleteTask(0); // Eliminamos la primera tarea
@@ -63,13 +64,13 @@ describe('To-Do List: Lógica CON Persistencia (Mocha/Chai)', () => {
         const stored = JSON.parse(localStorage.getItem('tasks'));
 
         expect(stored).to.have.lengthOf(1);
-        expect(stored[0].text).to.equal('Tarea 2'); // Verifica que se eliminó la correcta
+        expect(stored[0].text).to.equal('Tarea de reserva');
     });
     
     it('addTask no debe añadir tareas si el texto está vacío', () => {
         const success = addTask(' ');
         
         expect(success).to.be.false;
-        expect(localStorage.getItem('tasks')).to.be.null; 
+        expect(localStorage.getItem('tasks')).to.be.null; // No debe haber guardado nada
     });
 });
