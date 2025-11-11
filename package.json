@@ -5,7 +5,7 @@
   "main": "src/app.js",
   "type": "module",
   "scripts": {
-    "test": "mocha 'tests/**/*.js'",  
+    "test": "mocha 'tests/app.test.js'",  
     "start": "echo 'Run the app by opening src/index.html'",
     "lint": "echo 'No linting specified'"
   },

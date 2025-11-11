@@ -1,29 +1,25 @@
 // Variable para almacenar todas las tareas (array de objetos)
 let tasks = [];
 
+// --- UTILIDADES EXPORTADAS PARA TESTING ---
+
 /**
- * Carga las tareas de localStorage al inicio.
+ * Devuelve el array interno de tareas (solo para verificación en tests).
  */
-function loadTasks() {
-    // Solo procede si estamos en un entorno con localStorage
-    if (typeof localStorage === 'undefined') return; 
-    
-    const storedTasks = localStorage.getItem('tasks');
-    if (storedTasks) {
-        tasks = JSON.parse(storedTasks);
-    }
-    renderTasks();
+export function getTasks() {
+    return tasks;
 }
 
 /**
- * Guarda el array 'tasks' en localStorage.
+ * Reinicia el array de tareas (solo para limpieza en tests).
  */
-function saveTasks() {
-    // Solo procede si estamos en un entorno con localStorage
-    if (typeof localStorage === 'undefined') return;
-    
-    localStorage.setItem('tasks', JSON.stringify(tasks));
+export function resetTasks() {
+    tasks = [];
 }
+
+// --- FUNCIONES PRINCIPALES ---
+
+// Las funciones loadTasks() y saveTasks() han sido eliminadas.
 
 /**
  * Dibuja la lista de tareas en el elemento UL.
@@ -70,7 +66,7 @@ export function addTask(text) {
     if (text.trim() === '') return false;
     
     tasks.push({ text: text, completed: false });
-    saveTasks();
+    // saveTasks() ELIMINADO
     renderTasks();
     return true;
 }
@@ -81,7 +77,7 @@ export function addTask(text) {
  */
 export function toggleTask(index) {
     tasks[index].completed = !tasks[index].completed;
-    saveTasks();
+    // saveTasks() ELIMINADO
     renderTasks();
 }
 
@@ -91,16 +87,15 @@ export function toggleTask(index) {
  */
 export function deleteTask(index) {
     tasks.splice(index, 1);
-    saveTasks();
+    // saveTasks() ELIMINADO
     renderTasks();
 }
 
 
-// --- Inicialización y Event Listeners (Lógica de arranque) ---
-// Solo ejecuta esto en el navegador, no durante los tests de Node.js
+// --- Inicialización (Solo para el Navegador) ---
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
-        loadTasks();
+        // loadTasks() ELIMINADO: La lista empieza vacía.
         
         const taskForm = document.getElementById('task-form');
         const taskInput = document.getElementById('task-input');
