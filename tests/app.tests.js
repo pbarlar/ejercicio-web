@@ -1,116 +1,75 @@
-// Variable para almacenar todas las tareas (array de objetos)
-let tasks = [];
+// tests/app.test.js
 
-/**
- * Carga las tareas de localStorage al inicio.
- */
-function loadTasks() {
-    const storedTasks = localStorage.getItem('tasks');
-    if (storedTasks) {
-        // Si hay datos, se parsean y se cargan
-        tasks = JSON.parse(storedTasks);
-    }
-    renderTasks(); // Dibuja las tareas en la interfaz
-}
+// --- 1. CONFIGURACIÓN DE ENTORNO (JSDOM - Debe ir PRIMERO) ---
+// Importamos JSDOM para simular el navegador en el entorno de Node.js (CI)
+const { JSDOM } = require('jsdom');
 
-/**
- * Guarda el array 'tasks' en localStorage.
- */
-function saveTasks() {
-    // Convierte el array a string y lo guarda
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-}
+// Creamos la instancia JSDOM, simulando el DOM y localStorage
+const dom = new JSDOM('<!doctype html><html><body><ul id="task-list"></ul></body></html>');
+global.window = dom.window;
+global.document = dom.window.document;
+global.localStorage = dom.window.localStorage; // Aquí se crea el localStorage simulado
+global.HTMLElement = dom.window.HTMLElement; 
 
-/**
- * Dibuja la lista de tareas en el elemento UL.
- */
-export function renderTasks() {
-    const taskList = document.getElementById('task-list');
-    if (!taskList) return; // Evita errores si se llama en entorno sin DOM (tests)
+
+// --- 2. CÓDIGO DE PRUEBAS ---
+import { expect } from 'chai';
+
+// Importamos las funciones DESPUÉS de configurar el entorno global
+import { addTask, toggleTask, deleteTask } from '../src/app.js'; 
+
+
+// Los tests en sí (usando la sintaxis de Mocha)
+describe('To-Do List: Lógica CON Persistencia (Mocha/Chai)', () => {
     
-    taskList.innerHTML = ''; // Limpia la lista existente
-
-    tasks.forEach((task, index) => {
-        // 1. Crear el elemento de la lista (li)
-        const listItem = document.createElement('li');
-        listItem.classList.add('task-item');
-        if (task.completed) {
-            listItem.classList.add('completed');
-        }
-
-        // 2. Crear el texto de la tarea
-        const taskText = document.createElement('span');
-        taskText.classList.add('task-text');
-        taskText.textContent = task.text;
-
-        // 3. Crear el botón de eliminar
-        const deleteBtn = document.createElement('button');
-        deleteBtn.classList.add('delete-btn');
-        deleteBtn.textContent = '✖';
-        
-        // 4. Asignar Eventos (solo si estamos en un entorno con DOM)
-        if (typeof document !== 'undefined') {
-            taskText.addEventListener('click', () => toggleTask(index));
-            deleteBtn.addEventListener('click', () => deleteTask(index));
-        }
-
-        // 5. Ensamblar y añadir al DOM
-        listItem.appendChild(taskText);
-        listItem.appendChild(deleteBtn);
-        taskList.appendChild(listItem);
+    // Antes de cada prueba, limpiamos el localStorage simulado
+    beforeEach(() => {
+        localStorage.clear();
     });
-}
 
-/**
- * Añade una nueva tarea al array.
- * Se exporta para las pruebas unitarias.
- */
-export function addTask(text) {
-    if (text.trim() === '') return false;
+    it('addTask debe añadir una nueva tarea y GUARDARLA en localStorage', () => {
+        addTask('Comprar los ingredientes');
+        
+        // Verificamos que el cambio se refleje en localStorage
+        const stored = JSON.parse(localStorage.getItem('tasks'));
+        
+        expect(stored).to.have.lengthOf(1);
+        expect(stored[0].text).to.equal('Comprar los ingredientes');
+        expect(stored[0].completed).to.be.false;
+    });
+
+    it('toggleTask debe cambiar el estado y actualizar localStorage', () => {
+        // Preparamos el estado inicial (la función addTask se encarga de saveTasks)
+        addTask('Tarea a completar');
+        
+        // Ejecución de la acción
+        toggleTask(0); // Cambiamos el estado del primer (y único) elemento
+        
+        // Verificación del cambio en localStorage
+        const stored = JSON.parse(localStorage.getItem('tasks'));
+
+        expect(stored).to.have.lengthOf(1);
+        expect(stored[0].completed).to.be.true;
+    });
+
+    it('deleteTask debe remover la tarea y actualizar localStorage', () => {
+        addTask('Tarea 1');
+        addTask('Tarea 2');
+        
+        // Ejecución de la acción
+        deleteTask(0); // Eliminamos la primera tarea
+        
+        // Verificación del cambio en localStorage
+        const stored = JSON.parse(localStorage.getItem('tasks'));
+
+        expect(stored).to.have.lengthOf(1);
+        expect(stored[0].text).to.equal('Tarea 2'); // Verifica que se eliminó la correcta
+    });
     
-    // Añadir el nuevo objeto de tarea
-    tasks.push({ text: text, completed: false });
-    saveTasks();
-    renderTasks();
-    return true;
-}
-
-/**
- * Cambia el estado 'completed' de una tarea.
- */
-function toggleTask(index) {
-    tasks[index].completed = !tasks[index].completed;
-    saveTasks();
-    renderTasks();
-}
-
-/**
- * Elimina una tarea por su índice.
- */
-function deleteTask(index) {
-    tasks.splice(index, 1);
-    saveTasks();
-    renderTasks();
-}
-
-
-// --- Inicialización y Event Listeners (Lógica de arranque) ---
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Cargar tareas guardadas al iniciar
-    loadTasks();
-    
-    // 2. Asignar evento al formulario de añadir
-    const taskForm = document.getElementById('task-form');
-    const taskInput = document.getElementById('task-input');
-
-    if (taskForm) {
-        taskForm.addEventListener('submit', (e) => {
-            e.preventDefault(); // Previene el envío estándar
-
-            const text = taskInput.value;
-            if (addTask(text)) {
-                taskInput.value = ''; // Limpia el input si la tarea fue añadida
-            }
-        });
-    }
+    it('addTask no debe añadir tareas si el texto está vacío', () => {
+        const success = addTask(' ');
+        
+        expect(success).to.be.false;
+        expect(localStorage.getItem('tasks')).to.be.null; 
+    });
 });
