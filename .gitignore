@@ -1,0 +1,14 @@
+# 1. Directorios de Dependencias
+# Ignora todas las librerías instaladas por npm (paquetes grandes y reconstruibles).
+/node_modules
+
+# 2. Archivos de Logs y Caché
+# Archivos generados automáticamente por npm/yarn.
+npm-debug.log*
+yarn-error.log*
+.npm
+
+# 3. Archivos de Cobertura de Tests
+# Directorios creados por Jest o herramientas de testing.
+/coverage
+/.nyc_output
